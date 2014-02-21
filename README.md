@@ -27,13 +27,14 @@ Whenever a node with the role `xweb` joins the cluster, the serf handler will ad
 of available servers. Likewise, whenever an `xweb` node leaves (or fails out of) the cluster, the serf
 handler will remove it from the haproxy server list.
 
-So, supposing you had a docker container with a webserver running on port 8080 (this is hardcoded currently)
+So, supposing you had a docker container with a webserver running on port 8080
 and serf agent connecting to serf_1 (just like this container), you could add it to the pool with
 
             sudo docker run -P -link serf_1:serf_1 -d my-web-server
             
-The haproxy container will update it's haproxy.conf, restart itself, and start serving up content. Add/remove
-new `my-web-server` containers at will and it all just works.
+The haproxy container will update it's haproxy.conf, restart itself, and start serving up content.
+The haproxy container will use the IP address associated with the serf node and the port specified
+in the `port` tag on the node. Add/remove new `my-web-server` containers at will and it all just works.
 
 ## Config
 

@@ -11,14 +11,24 @@
               (subseq str 0 pos)
               (split-at char (subseq str (1+ pos))))))))
 
+(defun parse-tags (tags)
+  (loop for tag in (split-at #\, tags)
+       collect (apply #'cons (split-at #\= tag))))
+
 (defun parse-member (line)
-  (let ((items (split-at #\Tab line)))
-    (apply #'append
-           (mapcar #'list
-                   (case (length items)
-                     (3 '(:name :ip-addr :tags))
-                     (4 '(:name :ip-addr :role :tags)))
-                   items))))
+  (let* ((items (split-at #\Tab line))
+         (member (apply #'append
+                        (mapcar #'list
+                                (case (length items)
+                                  (3 '(:name :ip-addr :tags))
+                                  (4 '(:name :ip-addr :role :tags)))
+                                items))))
+    (setf (getf member :tags)
+          (parse-tags (getf member :tags)))
+    member))
+
+(defun get-tag (member tag-key)
+  (cdr (assoc tag-key (getf member :tags) :test #'string-equal)))
 
 (defun get-handler (type)
   (cdr (assoc type *handlers* :test 'string-equal)))

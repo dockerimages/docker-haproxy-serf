@@ -13,10 +13,10 @@
       (with-open-file (s *haproxy-cfg*
                          :direction :output
                          :if-exists :append)
-                      (write-line (format nil "~aserver ~a ~a~a check" #\Tab
+                      (write-line (format nil "~aserver ~a ~a:~a check" #\Tab
                                           (getf member :name)
                                           (getf member :ip-addr)
-                                          ":8080") s))
+                                          (get-tag member "port")) s))
       (sb-ext:run-program *supervisorctl* '("restart" "haproxy")))))
 
 (defun remove-node (line)
